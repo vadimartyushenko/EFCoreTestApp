@@ -1,7 +1,5 @@
 ﻿using System;
 using System.IO;
-using System.Linq;
-using Microsoft.Data.SqlClient;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.Extensions.Configuration;
 
@@ -22,6 +20,7 @@ namespace EFCoreTestApp
 			var optionsBuilder = new DbContextOptionsBuilder<EfcoreappdbContext>();
 			var options = optionsBuilder.UseSqlServer(connectionStr).Options;
 
+
 			using (var db = new EfcoreappdbContext(options))
 			{
 
@@ -30,18 +29,18 @@ namespace EFCoreTestApp
 
 				Console.WriteLine("----------------------------------------------");
 
-				/*var user = new BlogUser()
+				var user = new BlogUser()
 				{
-					UserLogin = "ivashka$12",
-					Name = "Pavel",
+					UserLogin = "ivashka$13",
+					Name = "Alex",
 					Surname = "Ivanov",
 					Email = "p.newivanov@ya.ru",
-					Password = "goierew_)_ewwer",
+					Password = "11",
 				};
 
-				manager.DeleteUserByLogin(user.UserLogin);
+				manager.AddUser(user);
 
-				manager.PrintUsers();*/
+				manager.PrintUsers();
 			}
 
 			Console.ReadKey();

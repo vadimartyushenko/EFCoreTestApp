@@ -1,5 +1,9 @@
 ﻿using System;
+using System.IO;
+using System.Threading;
+using System.Threading.Tasks;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.EntityFrameworkCore.ChangeTracking;
 using Microsoft.EntityFrameworkCore.Metadata;
 
 #nullable disable
@@ -8,6 +12,8 @@ namespace EFCoreTestApp
 {
 	public partial class EfcoreappdbContext : DbContext
 	{
+		private readonly StreamWriter _logStream = new ("log.txt", true);
+		
 		public virtual DbSet<BlogUser> BlogUsers { get; set; }
 
 		public EfcoreappdbContext(DbContextOptions<EfcoreappdbContext> options) : base(options)
@@ -15,13 +21,27 @@ namespace EFCoreTestApp
 			Database.EnsureCreated();
 		}
 
-		/*protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
+		protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
 		{
 				if (!optionsBuilder.IsConfigured)
 				{
 					optionsBuilder.UseSqlServer("Server=VM0129-ORACLE\\SQLEXPRESS;Database=efcoreappdb;Trusted_Connection=True;");
 				}
-		}*/
+
+				optionsBuilder.LogTo(_logStream.WriteLine);
+		}
+
+		public override void Dispose()
+		{
+			base.Dispose();
+			_logStream.Dispose();
+		}
+
+		public override async ValueTask DisposeAsync()
+		{
+			await base.DisposeAsync();
+			await _logStream.DisposeAsync();
+		}
 
 		protected override void OnModelCreating(ModelBuilder modelBuilder)
 		{
