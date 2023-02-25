@@ -2,11 +2,11 @@
 
 namespace MetanitEFCore;
 
-public class AppContext : DbContext
+public class ApplicationContext : DbContext
 {
     public DbSet<User> Users => Set<User>();
 
-    public AppContext()
+    public ApplicationContext()
     {
         var isNotExist = Database.EnsureCreated();
         Console.WriteLine($"Database exist - {!isNotExist}");
