@@ -10,6 +10,7 @@ public class ApplicationContext : DbContext
     {
         var isNotExist = Database.EnsureCreated();
         Console.WriteLine($"Database exist - {!isNotExist}");
+        Console.WriteLine($"Db is available - {Database.CanConnect()}");
     }
 
     protected override void OnConfiguring(DbContextOptionsBuilder optionsBuilder)
