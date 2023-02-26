@@ -1,37 +1,43 @@
 ﻿using MetanitEFCore;
 using Microsoft.EntityFrameworkCore;
+using Microsoft.Extensions.Configuration;
 
-//var user = GetFirstUser();
-//UpdateUser(user);
+var builder = new ConfigurationBuilder();
+builder.SetBasePath(Directory.GetCurrentDirectory());
+builder.AddJsonFile("appsettings.json");
 
-//CreateTestUsersAsync();
-//UpdateFirstAsync();
-DeleteFirstAsync();
+var config = builder.Build();
+var connectionString = config.GetConnectionString("DefaultConnection");
 
-//CreateTestUsers();
-//UpdateFirst();
-//DeleteFirst();
-PrintAsync();
+var optionBuilder = new DbContextOptionsBuilder<ApplicationContext>();
+var options = optionBuilder.UseSqlite(connectionString).Options;
+
+using var db = new ApplicationContext(options);
+var user = GetFirstUser(db);
+//UpdateUser(user, db);
+
+//CreateTestUsersAsync(options);
+//UpdateFirstAsync(options);
+//DeleteFirstAsync(options);
+
+//CreateTestUsers(options);
+//UpdateFirst(db);
+//DeleteFirst(options);
+PrintAsync(db);
 Console.Read();
 
-User? GetFirstUser()
-{
-    using var db = new ApplicationContext();
-    return db.Users.FirstOrDefault();
-}
+User? GetFirstUser(ApplicationContext db) => db.Users.FirstOrDefault();
 
-void DeleteFirst()
+void DeleteFirst(ApplicationContext db)
 {
-    using var db = new ApplicationContext();
     var first = db.Users.FirstOrDefault();
     if (first == null) 
         return;
     db.Users.Remove(first);
     db.SaveChanges();
 }
-async void DeleteFirstAsync()
+async void DeleteFirstAsync(ApplicationContext db)
 {
-    await using var db = new ApplicationContext();
     var first = await db.Users.FirstOrDefaultAsync();
     if (first == null) 
         return;
@@ -39,9 +45,8 @@ async void DeleteFirstAsync()
     await db.SaveChangesAsync();
 }
 
-void UpdateFirst()
+void UpdateFirst(ApplicationContext db)
 {
-    using var db = new ApplicationContext();
     var first = db.Users.FirstOrDefault();
     if (first == null) 
         return;
@@ -49,9 +54,9 @@ void UpdateFirst()
     first.Age = 99;
     db.SaveChanges();
 }
-async void UpdateFirstAsync()
+
+async void UpdateFirstAsync(ApplicationContext db)
 {
-    await using var db = new ApplicationContext();
     var first = await db.Users.FirstOrDefaultAsync();
     if (first == null) 
         return;
@@ -60,9 +65,8 @@ async void UpdateFirstAsync()
     await db.SaveChangesAsync();
 }
 
-void UpdateUser(User user)
+void UpdateUser(User user, ApplicationContext db)
 {
-    using var db = new ApplicationContext();
     if (user == null)
         return;
     user.Name = "Igorok";
@@ -71,10 +75,8 @@ void UpdateUser(User user)
     db.SaveChanges();
 }
 
-void CreateTestUsers()
+void CreateTestUsers(ApplicationContext db)
 {
-    using var db = new ApplicationContext();
-    
     var tom = new User { Name = "Tom", Age = 33 };
     var alice = new User { Name = "Alice", Age = 26 };
     
@@ -82,10 +84,9 @@ void CreateTestUsers()
     db.SaveChanges();
     Console.WriteLine("Objects saved!");
 }
-async void CreateTestUsersAsync()
+
+async void CreateTestUsersAsync(ApplicationContext db)
 {
-    await using var db = new ApplicationContext();
-    
     var tom = new User { Name = "Tom", Age = 33 };
     var alice = new User { Name = "Alice", Age = 26 };
     
@@ -94,18 +95,17 @@ async void CreateTestUsersAsync()
     Console.WriteLine("Objects saved!");
 }
 
-void Print()
+void Print(ApplicationContext db)
 {
-    using var db = new ApplicationContext();
     var users = db.Users.ToList();
     
     Console.WriteLine("User list:");
     foreach(var user in users)
         Console.WriteLine($"{user.UserId}. {user.Name} - {user.Age}");
 }
-async void PrintAsync()
+
+async void PrintAsync(ApplicationContext db)
 {
-    await using var db = new ApplicationContext();
     var users = await db.Users.ToListAsync();
     
     Console.WriteLine("User list:");
