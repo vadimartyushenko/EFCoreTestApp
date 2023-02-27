@@ -15,7 +15,6 @@ internal class Program
         var connectionString = config.GetConnectionString("DefaultConnection");
 
         var optionBuilder = new DbContextOptionsBuilder<ApplicationContext>();
-        optionBuilder.LogTo(message => Debug.WriteLine(message));
         var options = optionBuilder.UseSqlite(connectionString).Options;
 
         using var db = new ApplicationContext(options);
